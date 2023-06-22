@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    volumes:
+      - ./client:/app
+    ports:
+      - 3000:3000
+    depends_on:
+      - server
+    networks:
+      - monolithree-network
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    env_file:
+      - ./server/.env
+    volumes:
+      - ./server:/app
+    ports:
+      - 8000:80
+    networks:
+      - monolithree-network
+
+  db:
+    image: mysql:5.7
+    environment:
+      - "MYSQL_DATABASE=laravel"
+      - "MYSQL_ROOT_PASSWORD=root"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:  
+
+networks:
+  monolithree-network:
+    driver: bridge
